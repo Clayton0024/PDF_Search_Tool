@@ -1,3 +1,4 @@
 /sample_pdfs
 /venv
 pdf_data.db
+/web/sample_pdfs/*
