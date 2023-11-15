@@ -110,22 +110,20 @@
                 searchPDFs();
             }
         }
-
         function viewFailedPDFs() {
-            eel.get_failed_pdfs()(function(failedPdfs) {
-                let container = document.getElementById('failedPdfs');
-                container.innerHTML = '';
-                failedPdfs.forEach(pdf => {
-                    let link = document.createElement('a');
-                    link.href = pdf;
-                    link.textContent = 'Failed PDF: ' + pdf;
-                    link.target = '_blank';
-                    container.appendChild(link);
-                    container.appendChild(document.createElement('br'));
-                });
-            });
+         eel.get_failed_pdfs()(function(failedPdfs) {
+        if (failedPdfs.length > 0) {
+            let pdfViewer = document.getElementById('pdfViewer'); // Adjust this ID to match your PDF viewer's ID
+            pdfResults = failedPdfs
+            pdfViewer.src =  failedPdfs[0]; // This sets the viewer to display the first failed PDF
+            console.log(pdfViewer.src)
+            updateNavigationControls();
+        } else {
+            console.log("No failed PDFs found.");
+        }
+        
+    });
 }
-
 
         // Attach the event listener to the search input
         document.getElementById('searchInput').addEventListener('keydown', handleEnterKey);

@@ -2,4 +2,4 @@
 /venv
 pdf_data.db
 /web/sample_pdfs/*
-/failed_pdfs
+web/failed_pdfs

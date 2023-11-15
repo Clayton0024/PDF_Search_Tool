@@ -20,7 +20,7 @@ else:
 pdf_directory = os.path.join(script_dir, 'sample_pdfs')
 pdf_result_directory = os.path.join(script_dir, 'web', 'sample_pdfs')
 os.makedirs(pdf_result_directory, exist_ok=True)
-failed_pdf_directory = os.path.join(script_dir, 'failed_pdfs')
+failed_pdf_directory = os.path.join(script_dir, 'web/failed_pdfs')
 os.makedirs(failed_pdf_directory, exist_ok=True)
 
 
