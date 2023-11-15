@@ -57,7 +57,7 @@ def process_pdf_directory(directory_path):
             except Exception as e:
                 print(f"Failed to process {filename}: {e}")
                 failed_path = os.path.join(failed_pdf_directory, filename)
-                shutil.move(input_path, failed_path)
+                shutil.copy(input_path, failed_path)
 
 
 # Check if database and table exist
