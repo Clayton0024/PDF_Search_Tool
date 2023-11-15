@@ -26,7 +26,7 @@ os.makedirs(failed_pdf_directory, exist_ok=True)
 
 def apply_ocr_to_pdf(input_path, output_path):
     try:
-        subprocess.run(["ocrmypdf", "--force", input_path, output_path], check=True)
+        subprocess.run(["ocrmypdf", "--force ","--rotate-pages", input_path, output_path], check=True)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while running ocrmypdf: {e}")
 
