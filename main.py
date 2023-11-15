@@ -20,10 +20,13 @@ else:
 pdf_directory = os.path.join(script_dir, 'sample_pdfs')
 pdf_result_directory = os.path.join(script_dir, 'web', 'sample_pdfs')
 os.makedirs(pdf_result_directory, exist_ok=True)
+failed_pdf_directory = os.path.join(script_dir, 'failed_pdfs')
+os.makedirs(failed_pdf_directory, exist_ok=True)
+
 
 def apply_ocr_to_pdf(input_path, output_path):
     try:
-        subprocess.run(["ocrmypdf", "--skip-text", input_path, output_path], check=True)
+        subprocess.run(["ocrmypdf", "--force", input_path, output_path], check=True)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while running ocrmypdf: {e}")
 
@@ -35,23 +38,27 @@ def extract_text_from_pdf(file_path):
         for page in pdf_reader.pages:
             text += page.extract_text() + '\n'
     return text
-# Function to process all PDFs in a directory
 def process_pdf_directory(directory_path):
     for filename in os.listdir(directory_path):
         if filename.endswith('.pdf'):
             input_path = os.path.join(directory_path, filename)
             output_path = os.path.join(directory_path, "ocr_" + filename)
 
-            # Apply OCR and check if output file exists
-            apply_ocr_to_pdf(input_path, output_path)
-            if os.path.exists(output_path):
-                # Extract text from the OCR-applied PDF
-                content = extract_text_from_pdf(output_path)
-                rel_path = os.path.relpath(output_path, directory_path)
-                c.execute("INSERT INTO pdf_content (filename, content) VALUES (?, ?)", (rel_path, content))
-                conn.commit()
-            else:
-                print(f"OCR output file not found for: {filename}")
+            try:
+                apply_ocr_to_pdf(input_path, output_path)
+                if os.path.exists(output_path):
+                    # Extract text from the OCR-applied PDF
+                    content = extract_text_from_pdf(output_path)
+                    rel_path = os.path.relpath(output_path, directory_path)
+                    c.execute("INSERT INTO pdf_content (filename, content) VALUES (?, ?)", (rel_path, content))
+                    conn.commit()
+                else:
+                    raise FileNotFoundError(f"OCR output file not found for: {filename}")
+            except Exception as e:
+                print(f"Failed to process {filename}: {e}")
+                failed_path = os.path.join(failed_pdf_directory, filename)
+                shutil.move(input_path, failed_path)
+
 
 # Check if database and table exist
 def database_exists(db_path, table_name):
@@ -93,6 +100,14 @@ def search_pdfs(keyword):
     except Exception as e:
         print(f"Error during search: {e}")
         return []
+
+@eel.expose
+def get_failed_pdfs():
+    failed_pdfs = []
+    for filename in os.listdir(failed_pdf_directory):
+        if filename.endswith('.pdf'):
+            failed_pdfs.append(os.path.join('failed_pdfs', filename))
+    return failed_pdfs
 
 # Main execution
 if __name__ == '__main__':

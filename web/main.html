@@ -111,8 +111,29 @@
             }
         }
 
+        function viewFailedPDFs() {
+            eel.get_failed_pdfs()(function(failedPdfs) {
+                let container = document.getElementById('failedPdfs');
+                container.innerHTML = '';
+                failedPdfs.forEach(pdf => {
+                    let link = document.createElement('a');
+                    link.href = pdf;
+                    link.textContent = 'Failed PDF: ' + pdf;
+                    link.target = '_blank';
+                    container.appendChild(link);
+                    container.appendChild(document.createElement('br'));
+                });
+            });
+}
+
+
         // Attach the event listener to the search input
         document.getElementById('searchInput').addEventListener('keydown', handleEnterKey);
     </script>
+    <!-- Place this just before the closing </body> tag -->
+<div class="fixed-bottom text-left mb-3 ml-3">
+    <button onclick="viewFailedPDFs()" class="btn btn-primary">View Failed PDFs</button>
+</div>
+
 </body>
 </html>
